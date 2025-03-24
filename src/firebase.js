@@ -38,3 +38,4 @@ export const signIn = () => {
 };
 
 export const signOutUser = () => signOut(auth);
+         # Add a blank line (optional)
