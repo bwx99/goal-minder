@@ -4,13 +4,14 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MSG_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDPoBiZQK1NaQjcEb6_FqcE7c7nvZJA2PE",
+  authDomain: "goal-minder-a42b0.firebaseapp.com",
+  projectId: "goal-minder-a42b0",
+  storageBucket: "goal-minder-a42b0.appspot.com",
+  messagingSenderId: "481080450835",
+  appId: "1:481080450835:web:e4d19cf5ef26d1d9bde0e6"
 };
+
 
 const app = initializeApp(firebaseConfig);
 
