@@ -12,22 +12,25 @@ import {
   getDocs,
   setDoc,
   doc,
-  getDoc, // ✅ move getDoc up here
+  getDoc
 } from "firebase/firestore";
 
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDPoBiZQKlNaQjcEb6_FqcE7c7nvZJA2PE",
   authDomain: "goal-minder-a42b0.firebaseapp.com",
   projectId: "goal-minder-a42b0",
-  storageBucket: "goal-minder-a42b0.appspot.com", // ✅ fixed typo in domain
+  storageBucket: "goal-minder-a42b0.appspot.com", // ✅ fixed typo from .firebasestorage.app
   messagingSenderId: "481800450835",
   appId: "1:481800450835:web:e4d19cf5ef26d1d9bde0e6"
 };
 
+// Initialize
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
+// Auth functions
 export const signIn = () => {
   const provider = new GoogleAuthProvider();
   return signInWithPopup(auth, provider)
@@ -41,7 +44,7 @@ export const signIn = () => {
 
 export const signOutUser = () => signOut(auth);
 
-// Load goals from Firestore
+// Load goals
 export const loadGoals = async (uid) => {
   try {
     const docRef = doc(db, 'users', uid);
@@ -53,7 +56,7 @@ export const loadGoals = async (uid) => {
   }
 };
 
-// Save goals to Firestore
+// Save goals
 export const saveGoals = async (uid, goals) => {
   try {
     await setDoc(doc(db, 'users', uid), { goals });
@@ -61,3 +64,4 @@ export const saveGoals = async (uid, goals) => {
     console.error("Error saving goals:", error);
   }
 };
+
