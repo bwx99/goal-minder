@@ -1,7 +1,17 @@
-// src/firebase.js
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
-import { getFirestore, collection, getDocs, setDoc, doc } from "firebase/firestore";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut
+} from "firebase/auth";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  setDoc,
+  doc
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDPoBiZQK1NaQjcEb6_FqcE7c7nvZJA2PE",
@@ -18,7 +28,13 @@ export const db = getFirestore(app);
 
 export const signIn = () => {
   const provider = new GoogleAuthProvider();
-  signInWithPopup(auth, provider);
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      console.log("✅ Logged in as:", result.user.displayName);
+    })
+    .catch((error) => {
+      console.error("❌ Login error:", error);
+    });
 };
 
 export const signOutUser = () => signOut(auth);
