@@ -1,4 +1,3 @@
-// src/firebase.js
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -20,17 +19,17 @@ const firebaseConfig = {
   apiKey: "AIzaSyDPoBiZQKlNaQjcEb6_FqcE7c7nvZJA2PE",
   authDomain: "goal-minder-a42b0.firebaseapp.com",
   projectId: "goal-minder-a42b0",
-  storageBucket: "goal-minder-a42b0.appspot.com", // ✅ fixed typo from .firebasestorage.app
+  storageBucket: "goal-minder-a42b0.appspot.com", // ✅ this must be appspot.com
   messagingSenderId: "481800450835",
   appId: "1:481800450835:web:e4d19cf5ef26d1d9bde0e6"
 };
 
-// Initialize
+// Initialize app
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// Auth functions
+// Sign in with Google
 export const signIn = () => {
   const provider = new GoogleAuthProvider();
   return signInWithPopup(auth, provider)
@@ -42,6 +41,7 @@ export const signIn = () => {
     });
 };
 
+// Sign out
 export const signOutUser = () => signOut(auth);
 
 // Load goals
