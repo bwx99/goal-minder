@@ -1,6 +1,7 @@
 {
   "name": "goal-minder",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "dependencies": {
     "@capacitor/android": "^7.1.0",
