@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import { auth, signIn, signOutUser, loadGoals, saveGoals } from './firebase';
@@ -60,20 +61,48 @@ function App() {
     setStreak(streakCount);
   }, [goals]);
 
-  const handleAddGoal = (e) => {
+  const handleAddGoal = async (e) => {
     e.preventDefault();
     const trimmed = newGoal.trim();
     if (trimmed && newDueDate) {
-      setGoals([...goals, {
+      const newGoalObj = {
         text: trimmed,
         completed: false,
         dueDate: newDueDate,
         createdAt: Date.now(),
         completedAt: null,
         xpEarned: 0
-      }]);
+      };
+
+      setGoals([...goals, newGoalObj]);
       setNewGoal('');
       setNewDueDate('');
+
+      // Call AI to generate a plan
+      try {
+        const res = await fetch('/ai/generate-plan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ goal: trimmed })
+        });
+
+        if (!res.ok) throw new Error('Failed to get plan');
+
+        const data = await res.json();
+        if (data && data.steps && data.steps.length) {
+          const aiGoals = data.steps.map((step, i) => ({
+            text: step,
+            completed: false,
+            dueDate: newDueDate,
+            createdAt: Date.now(),
+            completedAt: null,
+            xpEarned: 0
+          }));
+          setGoals(prev => [...prev, ...aiGoals]);
+        }
+      } catch (err) {
+        console.error('AI planning failed:', err);
+      }
     }
   };
 
@@ -158,38 +187,9 @@ function App() {
           </div>
 
           <form onSubmit={handleAddGoal} className="goal-form">
-            <input
-              type="text"
-              value={newGoal}
-              onChange={(e) => setNewGoal(e.target.value)}
-              placeholder="Enter your goal..."
-              className="goal-input"
-            />
-            <input
-              type="date"
-              value={newDueDate}
-              onChange={(e) => setNewDueDate(e.target.value)}
-              className="goal-date"
-            />
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button type="submit" className="add-button">➕ Add Goal</button>
-              <button
-                type="button"
-                className="ai-button"
-                onClick={async () => {
-                  if (!newGoal || !newDueDate) return alert("Enter a goal and due date first");
-                  const response = await fetch('/ai/generate-plan', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ goal: newGoal, dueDate: newDueDate }),
-                  });
-                  const plan = await response.json();
-                  if (plan.error) return alert("AI error: " + plan.error);
-
-                  setGoals(prev => [...prev, ...plan]);
-                }}
-              >🧠 Generate Plan</button>
-            </div>
+            <input type="text" value={newGoal} onChange={(e) => setNewGoal(e.target.value)} placeholder="Enter your goal..." className="goal-input" />
+            <input type="date" value={newDueDate} onChange={(e) => setNewDueDate(e.target.value)} className="goal-date" />
+            <button type="submit" className="add-button">➕ Add Goal</button>
           </form>
 
           <div className="controls">
