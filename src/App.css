@@ -9,7 +9,7 @@ body {
 .app {
   max-width: 600px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px 16px; /* extra padding for mobile */
 }
 
 .title {
@@ -111,10 +111,15 @@ body {
   display: flex;
   align-items: center;
   background: #f2f2f2;
-  padding: 10px;
+  padding: 14px 10px;
   margin-bottom: 10px;
   border-radius: 6px;
   gap: 10px;
+}
+
+.goal-item.completed {
+  background: #d4edda;
+  border-left: 5px solid #28a745;
 }
 
 .goal-item.completed span {
@@ -124,6 +129,9 @@ body {
 
 .goal-item input[type="checkbox"] {
   margin-right: 10px;
+  width: 20px;
+  height: 20px;
+  accent-color: #4CAF50;
 }
 
 .goal-info {
@@ -149,6 +157,21 @@ body {
   cursor: pointer;
 }
 
+/* === Generate Button === */
+.generate-button {
+  padding: 10px;
+  font-size: 1rem;
+  background-color: #673ab7;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.generate-button:hover {
+  background-color: #5e35b1;
+}
+
 /* === Dark Mode === */
 .app.dark {
   background-color: #1f1f1f;
@@ -157,6 +180,11 @@ body {
 
 .app.dark .goal-item {
   background: #2b2b2b;
+}
+
+.app.dark .goal-item.completed {
+  background: #2e4831;
+  border-left: 5px solid #4CAF50;
 }
 
 .app.dark .goal-input,
@@ -183,4 +211,8 @@ body {
   background: #333;
   color: white;
   border: 1px solid #555;
+}
+
+.app.dark .generate-button {
+  background-color: #7e57c2;
 }
