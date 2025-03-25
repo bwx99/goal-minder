@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Goal Minder</string>
+    <string name="title_activity_main">Goal Minder</string>
+    <string name="package_name">com.goalminder.app</string>
+    <string name="custom_url_scheme">com.goalminder.app</string>
+</resources>
