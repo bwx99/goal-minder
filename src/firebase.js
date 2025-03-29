@@ -1,3 +1,4 @@
+// firebase.js
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -7,16 +8,10 @@ import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
 } from "firebase/auth";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  setDoc,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { getMessaging, getToken, onMessage, isSupported } from "firebase/messaging";
 
-// ✅ Your Firebase config
+// ✅ Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDPoBiZQKlNaQjcEb6_FqcE7c7nvZJA2PE",
   authDomain: "goal-minder-a42b0.firebaseapp.com",
@@ -26,58 +21,87 @@ const firebaseConfig = {
   appId: "1:481800450835:web:e4d19cf5ef26d1d9bde0e6",
 };
 
-// ✅ Init services
+// ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// ✅ Auth Service
 export const auth = getAuth(app);
+
+// ✅ Firestore Service
 export const db = getFirestore(app);
 
-// ✅ Google Sign In
+// ✅ Google Sign-In
 export const signIn = () => {
   const provider = new GoogleAuthProvider();
   return signInWithPopup(auth, provider)
     .then((result) => {
-      console.log("✅ Google sign-in:", result.user.displayName);
+      console.log("✅ Signed in:", result.user.displayName);
+      return result.user;
     })
     .catch((error) => {
-      console.error("❌ Google sign-in error:", error);
+      console.error("❌ Sign-in error:", error);
+      throw error;
     });
 };
 
 // ✅ Sign Out
 export const signOutUser = () => signOut(auth);
 
-// ✅ Phone Auth Setup
+// ✅ Phone Auth
 export const setUpRecaptcha = (phoneNumber, containerId) => {
-  const recaptcha = new RecaptchaVerifier(auth, containerId, {
+  const recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
     size: "invisible",
-    callback: (response) => {
-      console.log("✅ reCAPTCHA verified");
-    },
-    "expired-callback": () => {
-      console.warn("⚠️ reCAPTCHA expired");
-    },
   });
 
-  return signInWithPhoneNumber(auth, phoneNumber, recaptcha);
+  return signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
 };
 
-// ✅ Load Goals from Firestore
+// ✅ Firestore: Load Goals
 export const loadGoals = async (uid) => {
-  try {
-    const docRef = doc(db, "users", uid);
-    const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? docSnap.data().goals || [] : [];
-  } catch (error) {
-    console.error("❌ Error loading goals:", error);
-    return [];
-  }
+  const docRef = doc(db, "users", uid);
+  const docSnap = await getDoc(docRef);
+  return docSnap.exists() ? docSnap.data().goals || [] : [];
 };
 
-// ✅ Save Goals to Firestore
+// ✅ Firestore: Save Goals
 export const saveGoals = async (uid, goals) => {
+  await setDoc(doc(db, "users", uid), { goals });
+};
+
+// ✅ Messaging Service (conditional init)
+let messaging;
+
+isSupported().then((supported) => {
+  if (supported) {
+    messaging = getMessaging(app);
+
+    onMessage(messaging, (payload) => {
+      console.log("🔔 Foreground notification received:", payload);
+    });
+  } else {
+    console.warn("⚠️ Firebase messaging not supported in this environment.");
+  }
+});
+
+// ✅ Request Notification Permission and get FCM Token
+export const requestNotificationPermission = async () => {
+  if (!messaging) {
+    console.warn("⚠️ Messaging not initialized");
+    return;
+  }
+
   try {
-    await setDoc(doc(db, "users", uid), { goals });
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
+      const token = await getToken(messaging, {
+        vapidKey: "PrQbl3Jy1QI848iMWAmyBjf0xVm_tRPuoTYwRXIpr10",
+      });
+      console.log("🔥 FCM Token:", token);
+      return token;
+    } else {
+      console.log("🔕 Notification permission denied");
+    }
   } catch (error) {
-    console.error("❌ Error saving goals:", error);
+    console.error("❌ Error getting FCM token:", error);
   }
 };
